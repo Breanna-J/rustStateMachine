@@ -23,4 +23,13 @@ impl Pallet {
             balances: BTreeMap::new() 
             }
     }
-}
+
+    //set the balance of an account.
+    pub fn set_balance(&mut self, account: String, balance: u128) {
+        self.balances.insert(account, balance);
+    }
+    //get the balance of an account.
+    pub fn get_balance(&self, account: &String) -> Option<&u128> {
+        self.balances.get(account)
+    }
+}   
