@@ -29,7 +29,10 @@ impl Pallet {
         self.balances.insert(account, balance);
     }
     //get the balance of an account.
+    //if the account does not exist, return 0.
+    //the return type is Option<&u128> because we want to return a reference
+    //to the balance if it exists, or None if it does not exist.
     pub fn get_balance(&self, account: &String) -> Option<&u128> {
-        self.balances.get(account)
+        *self.balances.get(account).unwrap_or(&0);    
     }
 }   
