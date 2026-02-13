@@ -36,7 +36,34 @@ impl Pallet {
     pub fn get_balance(&self, account: &String) -> u128 {
         *self.balances.get(account).unwrap_or(&0)
     }
-}   
+    //function to transfer balance from one account to another.
+    pub fn transfer(
+        &mut self,
+        caller: String,
+        to: String,
+        amount: u128,
+    ) -> Result<(), String> {
+
+            //check the sender has enough balance to transfer.
+            let caller_balance = self.get_balance(&caller);
+            let to_balance = self.get_balance(&to);
+            
+            //check if the caller has enough balance to transfer the amount, and if the recipient's balance will not overflow after the transfer
+            //perform the math safely using checked_sub and checked_add to prevent overflow and underflow, and return an error if the math is not correct.
+            let new_caller_balance = caller_balance.checked_sub(amount).ok_or("Insufficient balance".to_string())?;
+            
+            //? means if the result is an error, return the error immediately, otherwise continue with the value.
+            let new_to_balance = to_balance.checked_add(amount).ok_or("Balance overflow".to_string())?;
+
+            //if the caller has enough balance, transfer the amount from the caller to the recipient and update both balances.
+            self.set_balance(caller, new_caller_balance);
+            self.set_balance(to, new_to_balance);
+
+            //return Ok if the math is correct and the transfer is successful.
+            Ok(())
+        }
+    }   
+ 
 //this is a conditional compilation attribute that tells the compiler to only compile when running tests. This is useful for keeping test code separate from production code.
 #[cfg(test)]
 mod tests {
