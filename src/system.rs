@@ -26,9 +26,24 @@ impl Pallet {
     pub fn increment_block(&mut self) {
         self.block_number += 1;
     }
-    pub fn increment_nonce(&mut self, account: String) {
-        let current_nonce = self.nonce.get(&account).cloned().unwrap_or(0);
-        self.nonce.insert(account, current_nonce + 1);
+
+    pub fn increment_nonce(&mut self, account: &String) {
+        let current_nonce = self.nonce.get(&account).unwrap_or(0);
+        let new_nonce: u32 = current_nonce + 1;
+        self.nonce.insert(account.clone(), new_nonce + 1);
     }
 
+}
+
+#[cfg(test)]
+mod test{
+    fn init_system(){
+        let mut system: Pallet = super::Pallet::new();
+        system.increment_block();
+        system.increment_nonce(&"Alice".to_string());
+
+        assert!(system.block_number(), 1);
+        assert!(system.nonce.get("Alice"), Some(&1));
+        assert!(system.nonce.get("Bob"), None);
+    }
 }
