@@ -5,10 +5,11 @@
 
 use std::collections::BTreeMap;
 
-#[derive(Debug, Clone)]
+type account:String;
+type balance: u128;
 
 // a struct is an object that can hold multiple values of different types, like a class.
-
+#[derive(Debug, Clone)]
 pub struct Pallet{
     // storage mapping the account ('String') to the balance (u128).
     balances: BTreeMap<String, u128>

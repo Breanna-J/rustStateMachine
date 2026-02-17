@@ -6,7 +6,7 @@ mod system;
 use system::Pallet as SystemPallet;
 use balances::Pallet as BalancesPallet;
 
-//asks rust to allow you to print the type for debugging
+//asks rust to allow you to print the type  in human readible text for debugging; all of the pallets associated need the derive(debug) statement
 #[derive(Debug)]
 
 //this is the main runtime, it accumulates all the different pallets in one
