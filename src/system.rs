@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
 
+//allows to debug in the main runtime
+#[derive(Debug)]
 pub struct Pallet {
     //current block number
     block_number: u32,

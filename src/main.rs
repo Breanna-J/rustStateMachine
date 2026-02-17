@@ -6,6 +6,9 @@ mod system;
 use system::Pallet as SystemPallet;
 use balances::Pallet as BalancesPallet;
 
+//asks rust to allow you to print the type for debugging
+#[derive(Debug)]
+
 //this is the main runtime, it accumulates all the different pallets in one
 //struct is the definition of the data
 pub struct Runtime {
