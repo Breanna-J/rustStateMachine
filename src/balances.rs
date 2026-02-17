@@ -5,8 +5,9 @@
 
 use std::collections::BTreeMap;
 
-type account:String;
-type balance: u128;
+//We can make the types explicit, this makes it easier to reffactor and change the overall type
+type Account = String;
+type Balance = u128;
 
 // a struct is an object that can hold multiple values of different types, like a class.
 #[derive(Debug, Clone)]
@@ -25,7 +26,7 @@ impl Pallet {
 
     //set the balance of an account.
 
-    pub fn set_balance(&mut self, account: String, balance: u128) {
+    pub fn set_balance(&mut self, account:Account, balance: Balance) {
         self.balances.insert(account, balance);
     }
 
