@@ -1,10 +1,11 @@
 use std::collections::BTreeMap;
 
+type BlockNumber = u32;
 //allows to debug in the main runtime
 #[derive(Debug)]
 pub struct Pallet {
     //current block number
-    block_number: u32,
+    block_number: BlockNumber,
     // storage mapping the account ('String') to the balance (u128).
     //nonce is a number used once. This is used to prevent replay attacks and ensure that each transaction is unique. In this case,
     // we are using a BTreeMap to store the nonce for each account, where the key is the account (String) and the value is the nonce (u32).
