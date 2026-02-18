@@ -50,7 +50,7 @@ where
             let to_balance = self.get_balance(&to);
             
             //check if the caller has enough balance to transfer the amount, and if the recipient's balance will not overflow after the transfer
-            // perform the math safely using checked_sub and checked_add to prevent overflow and underflow, and return an error if the math is not correct.
+            // perform the math safely using checked_sub and checked/add to prevent overflow and underflow, and return an error if the math is not correct.
             let new_caller_balance = caller_balance.checked_sub(&amount).ok_or("Insufficient balance")?;
             
             //? means if the result is an error, return the error immediately, otherwise continue with the value.
@@ -69,23 +69,21 @@ where
 #[cfg(test)]
 mod tests {
     use crate::types::Account;
-
+    use crate::types::Balance;
     use super::*;
 
     //singular test
     #[test]
 
-    //CREATE A NEW PALLET then set it balance for Alice to 0 and then get the balance for Alice and assert that it is 0.
-    
-    
+    //CREATE A NEW PALLET then set it balance for Alice to 0 and then get the balance for Alice and assert that it is 0.   
     fn balance_tests(){ 
-
+        
         //super::pallet::new() is used to grab the function from the parent module, without importing it.
         //if you want to import the whole thing (for example if there are sever structs or functions with the same name)
         //you would use super::*; to import everything from the parent module.
         //self=> the current module, super => the parent module(current file), crate=> the root module(parent directory.
         
-        let mut balances: Pallet<&Account, Balance> = super::Pallet::new();
+        let mut balances: Pallet<Account, Balance> = super::Pallet::new();
        
         balances.set_balance(&"Alice".to_string(), 0);
         balances.set_balance(&"Bob".to_string(), 0);
@@ -93,8 +91,8 @@ mod tests {
         let res = balances.transfer("Alice".to_string(), "Bob".to_string(), 40);
         assert_eq!(res, Ok(()));
 
-        assert_eq!(balances.get_balance(&"Alice".to_string()), 100);
-        assert_eq!(balances.get_balance(&"Bob".to_string()), 60);
+        assert_eq!(balances.get_balance(&&"Alice".to_string()), 100);
+        assert_eq!(balances.get_balance(&&"Bob".to_string()), 60);
     }
 
 

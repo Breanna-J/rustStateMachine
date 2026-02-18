@@ -40,7 +40,6 @@ impl Pallet {
 
 #[cfg(test)]
 mod test{
-    use crate::system;
 
     fn init_system(){
         //import Pallet
