@@ -14,13 +14,12 @@ pub mod types{
 
 //asks rust to allow you to print the type  in human readible text for debugging; all of the pallets associated need the derive(debug) statement
 #[derive(Debug)]
-
 //this is the main runtime, it accumulates all the different pallets in one
 //struct is the definition of the data
 pub struct Runtime {
     //SystemPallet and BalancePallet are imported above in the use statement
     system : system::Pallet,
-    balances : balances::Pallet<types::Account, types::Balance>,
+    balances : balances::Pallet<types::Account, types::Balance> ,
 }
 //impl is what it can do
 impl Runtime {
