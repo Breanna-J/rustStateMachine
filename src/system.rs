@@ -28,7 +28,7 @@ where
             nonce: BTreeMap::new()
         }
     }
-    //get the current block number.
+    //Get the current block number. This function copies the block_number and returns it, to maintain ownership.
     pub fn block_number(&self) -> BlockNumber {
         self.block_number
     }
