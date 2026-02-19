@@ -12,6 +12,7 @@ pub struct Pallet<Account, Balance>{
     balances: BTreeMap<Account, Balance>
 
 }
+
 impl <Account, Balance> Pallet<Account, Balance>
 where 
     Account: Ord + Clone, //orderable and dublicatable

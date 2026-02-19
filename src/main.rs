@@ -10,16 +10,17 @@ use balances::Pallet as BalancesPallet;
 pub mod types{
     pub type Account = String;
     pub type Balance = u128;
+    pub type Nonce = u32;
+    pub type BlockNumber = u32;
 }
-
 //asks rust to allow you to print the type  in human readible text for debugging; all of the pallets associated need the derive(debug) statement
 #[derive(Debug)]
 //this is the main runtime, it accumulates all the different pallets in one
 //struct is the definition of the data
 pub struct Runtime {
     //SystemPallet and BalancePallet are imported above in the use statement
-    system : system::Pallet,
-    balances : balances::Pallet<types::Account, types::Balance> ,
+    system : system::Pallet<types::BlockNumber, types::Account, types::Nonce>,
+    balances : balances::Pallet<types::Account, types::Balance>,
 }
 //impl is what it can do
 impl Runtime {
