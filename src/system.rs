@@ -3,10 +3,15 @@ use num::traits::{One, Zero};
 
 use crate::types::Account;
 
- 
+pub trait Config {
+    type BlockNumber: Zero + One + AddAssign + Copy;
+    type Account: Ord + Clone;
+    type Nonce: Zero + One + Copy;
+}
+
 //allows to debug in the main runtime
 #[derive(Debug)]
-pub struct Pallet <BlockNumber, Account, Nonce> {
+pub struct Pallet <T:Config> {
     //current block number
     block_number: BlockNumber,
     // storage mapping the account ('String') to the balance (u128).
