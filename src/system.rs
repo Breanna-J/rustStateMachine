@@ -1,7 +1,7 @@
 use std::{collections::BTreeMap, ops::AddAssign};
 use num::traits::{One, Zero};
 
-use crate::types::Account;
+use crate::types::{self, *};
 
 pub trait Config {
     type BlockNumber: Zero + One + AddAssign + Copy;
@@ -13,40 +13,40 @@ pub trait Config {
 #[derive(Debug)]
 pub struct Pallet <T:Config> {
     //current block number
-    block_number: BlockNumber,
+    block_number: T::BlockNumber,
     // storage mapping the account ('String') to the balance (u128).
     //nonce is a number used once. This is used to prevent replay attacks and ensure that each transaction is unique. In this case,
     // we are using a BTreeMap to store the nonce for each account, where the key is the account (String) and the value is the nonce (u32).
-    nonce: BTreeMap<Account, Nonce> 
+    nonce: BTreeMap<T::Account, T::Nonce>,
 }
 
-impl <BlockNumber, Account, Nonce> Pallet <BlockNumber, Account, Nonce> 
+impl <T:Config> Pallet <T> 
 where
     BlockNumber: Zero + One + AddAssign + Copy,
     Account: Ord + Clone,
     Nonce: Zero + One + Copy,
 {
-    //create a new instance of the pallet with an initial block number of 0 and an empty nonce mapping.
+    //create a new instance of  pallet with an initial block number of 0 and an empty nonce mapping.
     pub fn new() -> Self {
         Self {
-            block_number: BlockNumber::zero(),
+            block_number: T::BlockNumber::zero(),
             nonce: BTreeMap::new()
         }
     }
     //Get the current block number. This function copies the block_number and returns it, to maintain ownership.
-    pub fn block_number(&self) -> BlockNumber {
+    pub fn block_number(&self) -> T::BlockNumber {
         self.block_number
     }
 
     //this simulates the passage of time in the blockchain, as each block is produced.
     pub fn increment_block(&mut self) {
         //increment the block number by one
-        self.block_number += BlockNumber::one();
+        self.block_number += T::BlockNumber::one();
     }
 
-    pub fn increment_nonce(&mut self, account: &Account) {
-        let nonce: Nonce = *self.nonce.get(account).unwrap_or(&Nonce::zero());
-        let new_nonce: Nonce = nonce + Nonce::one();
+    pub fn increment_nonce(&mut self, account: &T::Account) {
+        let nonce: T::Nonce = *self.nonce.get(account).unwrap_or(&T::Nonce::zero());
+        let new_nonce: T::Nonce = nonce + T::Nonce::one();
         self.nonce.insert(account.clone(), new_nonce);
     }
 
@@ -54,15 +54,19 @@ where
 
 #[cfg(test)]
 mod test{
-    use crate::types::{BlockNumber, Account, Nonce};
-
-
+   struct TestConfig;
+   impl super::Config for TestConfig {
+        type Account = String;
+        type BlockNumber = u32;
+        type Nonce = u32;
+   }
+   #[test]
     fn init_system(){
         //import Pallet
         use super::*;
        
         //Create a new instance
-        let mut system: Pallet<BlockNumber, Account, Nonce> = super::Pallet::new();
+        let mut system: Pallet<TestConfig> = super::Pallet::<TestConfig>::new();
 
         //increment the block
         system.increment_block();

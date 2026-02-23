@@ -5,6 +5,7 @@ mod system;
 //"use" imports the pallets from the balance and system crates so we can use them in our main function.
 use system::Pallet as SystemPallet;
 use balances::Pallet as BalancesPallet;
+use crate::system::Config;
 
 //We can make the types explicit, this makes it easier to reffactor and change the overall type/constrain the code
 pub mod types{
@@ -19,10 +20,17 @@ pub mod types{
 //struct is the definition of the data
 pub struct Runtime {
     //SystemPallet and BalancePallet are imported above in the use statement
-    system : system::Pallet<types::BlockNumber, types::Account, types::Nonce>,
+    //system : system::Pallet<types::BlockNumber, types::Account, types::Nonce>,
+    system : system::Pallet<Self>,
     balances : balances::Pallet<types::Account, types::Balance>,
 }
-//impl is what it can do
+//impl is what struct can do
+impl system::Config for Runtime{
+    //pointing the generic type to another generic type makes them all consistently one type
+    type Account = types::Account;
+    type BlockNumber = types::BlockNumber;
+    type Nonce = types::Nonce;
+}
 impl Runtime {
     //create an instance of the main runtime by creating new instatnces of the pallets
     fn new()-> Self{
