@@ -7,6 +7,7 @@ use system::Pallet as SystemPallet;
 use balances::Pallet as BalancesPallet;
 use crate::system::Config;
 
+
 //We can make the types explicit, this makes it easier to reffactor and change the overall type/constrain the code
 pub mod types{
     pub type Account = String;
@@ -16,13 +17,14 @@ pub mod types{
 }
 //asks rust to allow you to print the type  in human readible text for debugging; all of the pallets associated need the derive(debug) statement
 #[derive(Debug)]
+
 //this is the main runtime, it accumulates all the different pallets in one
 //struct is the definition of the data
 pub struct Runtime {
     //SystemPallet and BalancePallet are imported above in the use statement
     //system : system::Pallet<types::BlockNumber, types::Account, types::Nonce>,
-    system : system::Pallet<Self>,
-    balances : balances::Pallet<types::Account, types::Balance>,
+    system: system::Pallet<Self>,
+    balances: balances::Pallet<Self>,
 }
 //impl is what struct can do
 impl system::Config for Runtime{
@@ -30,6 +32,11 @@ impl system::Config for Runtime{
     type Account = types::Account;
     type BlockNumber = types::BlockNumber;
     type Nonce = types::Nonce;
+}
+
+impl balances::Config for Runtime {
+    type Account = types::Account;
+    type Balance = types::Balance;
 }
 impl Runtime {
     //create an instance of the main runtime by creating new instatnces of the pallets
@@ -64,10 +71,6 @@ fn main() {
     //second transaction
     runtime.system.increment_nonce(&alice);
     let _res: Result<(), ()> = runtime.balances.transfer(alice.clone(), charlie,15).map_err( |e| eprintln!("{e}"));
-
-
-
-
 
 }
  
