@@ -3,30 +3,34 @@
 //Need to import the BTreeMap from the standard library to use it in our Pallet struct.
 
 
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, iter::empty};
 use num_traits::{Zero, CheckedAdd, CheckedSub};
 
-#[derive(Debug)]
-pub struct Pallet<Account, Balance>{
-    // storage mapping the account ('String') to the balance (u128).
-    balances: BTreeMap<Account, Balance>
+use crate::types::{Account, Balance};
 
+pub trait Config {
+    type Account: Ord + Clone;
+    type Balance: Zero + CheckedAdd + CheckedSub + Copy;
 }
 
-impl <Account, Balance> Pallet<Account, Balance>
+#[derive(Debug)]
+pub struct Pallet<T:Config>{
+   balances : BTreeMap<T::Account, T::Balance>,
+}
+
+impl <T:Config> Pallet<T>
 where 
     Account: Ord + Clone, //orderable and dublicatable
     Balance: Zero + CheckedSub + CheckedAdd + Copy, //can be zero, can support safe arrethmatic, cheap to duplicate without moving
 {
     pub fn new() -> Self {
         Self {
-            balances: BTreeMap::new() 
+            balances : BTreeMap::new() 
             }
     }
 
     //set the balance of an account.
-
-    pub fn set_balance(&mut self, account:&Account, balance: Balance) {
+    pub fn set_balance(&mut self, account:&T::Account, balance: T::Balance) {
         self.balances.insert(account.clone(), balance);
     }
 
@@ -34,16 +38,15 @@ where
     //if the account does not exist, return 0.
     //the return type is Option<&u128> because we want to return a reference
     //to the balance if it exists, or None if it does not exist.
-
-    pub fn get_balance(&self, account: &Account) -> Balance{
-        *self.balances.get(account).unwrap_or(&Balance::zero())
+    pub fn get_balance(&self, account: &T::Account) -> T::Balance{
+        *self.balances.get(account).unwrap_or(&T::Balance::zero())
     }
     //function to transfer balance from one account to another.
     pub fn transfer(
         &mut self,
-        caller: Account,
-        to: Account,
-        amount:Balance,
+        caller: T::Account,
+        to: T::Account,
+        amount:T::Balance,
     ) -> Result<(), &'static str> {
 
             //check the sender has enough balance to transfer.
@@ -71,20 +74,25 @@ where
 mod tests {
     use crate::types::Account;
     use crate::types::Balance;
-    use super::*;
-
+    use crate::balances::Pallet;    
+    struct TestConfig;
+    impl super::Config for TestConfig{
+        type Account = String;
+        type Balance = u32;
+    }
     //singular test
     #[test]
-
     //CREATE A NEW PALLET then set it balance for Alice to 0 and then get the balance for Alice and assert that it is 0.   
     fn balance_tests(){ 
+        use super::Config;
+
         
         //super::pallet::new() is used to grab the function from the parent module, without importing it.
         //if you want to import the whole thing (for example if there are sever structs or functions with the same name)
         //you would use super::*; to import everything from the parent module.
         //self=> the current module, super => the parent module(current file), crate=> the root module(parent directory.
         
-        let mut balances: Pallet<Account, Balance> = super::Pallet::new();
+        let mut balances: Pallet<TestConfig> = super::Pallet::<TestConfig>::new();
        
         balances.set_balance(&"Alice".to_string(), 0);
         balances.set_balance(&"Bob".to_string(), 0);
