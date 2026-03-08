@@ -35,7 +35,6 @@ impl system::Config for Runtime{
 }
 
 impl balances::Config for Runtime {
-    type Account = types::Account;
     type Balance = types::Balance;
 }
 impl Runtime {

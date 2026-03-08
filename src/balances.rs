@@ -8,8 +8,14 @@ use num_traits::{Zero, CheckedAdd, CheckedSub};
 
 use crate::types::{Account, Balance};
 
-pub trait Config {
-    type Account: Ord + Clone;
+pub trait Config: crate::system::Config {
+    //adding crate::system::Config as a supertrait means 
+    //that any type that implements Config must also 
+    //implement crate::system::Config. This allows us to 
+    //use the types defined in crate::system::Config 
+    //(like Account and BlockNumber) in our balances module,
+    // while still keeping the balances module separate 
+    //and modular.  
     type Balance: Zero + CheckedAdd + CheckedSub + Copy;
 }
 
@@ -71,27 +77,28 @@ where
  
 //this is a conditional compilation attribute that tells the compiler to only compile when running tests. This is useful for keeping test code separate from production code.
 #[cfg(test)]
-mod tests {
-    use crate::types::Account;
-    use crate::types::Balance;
-    use crate::balances::Pallet;    
+mod tests {   
     struct TestConfig;
-    impl super::Config for TestConfig{
+    impl crate::system::Config for TestConfig{
         type Account = String;
-        type Balance = u32;
+        type BlockNumber = u32;
+
+        type Nonce = u32;
+    } 
+
+    impl super::Config for TestConfig {
+        type Balance = u128;
     }
+    
     //singular test
     #[test]
     //CREATE A NEW PALLET then set it balance for Alice to 0 and then get the balance for Alice and assert that it is 0.   
-    fn balance_tests(){ 
-        use super::Config;
-
-        
+    fn balance_tests(){         
         //super::pallet::new() is used to grab the function from the parent module, without importing it.
         //if you want to import the whole thing (for example if there are sever structs or functions with the same name)
         //you would use super::*; to import everything from the parent module.
         //self=> the current module, super => the parent module(current file), crate=> the root module(parent directory.
-        
+        use crate::balances::Pallet;
         let mut balances: Pallet<TestConfig> = super::Pallet::<TestConfig>::new();
        
         balances.set_balance(&"Alice".to_string(), 0);
