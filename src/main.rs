@@ -3,10 +3,13 @@ mod balances;
 mod system;
 mod support;
 
+use std::usize;
+
 //"use" imports the pallets from the balance and system crates so we can use them in our main function.
 use system::Pallet as SystemPallet;
 use balances::Pallet as BalancesPallet;
-use crate::system::Config;
+use support::Extrinsic;
+use crate::{support::Extrinsic, system::Config, types::{BlockNumber, Nonce}};
 
 
 //We can make the types explicit, this makes it easier to reffactor and change the overall type/constrain the code
@@ -45,6 +48,24 @@ impl balances::Config for Runtime {
     type Balance = types::Balance;
 }
 impl Runtime {
+
+    //run a block of extrinsics and increment the block number.
+    fn execute_block(&mut self, block: types::Block) -> support::DispatchResult {
+        //inccrement the block and check if the block number is correct, if not return an error message.
+        self.system.increment_block();
+            if block.header.block_number != self.system.block_number(){
+                return Err("Block Number {block.header.block_number} invalid. Expected {self.system.block_number()}");
+            }
+        //execute each extrinsic in the block and check if the extrinsic is valid, if not return an error message.
+        //Can use iter or into_iter, iter borrows the data and leaves it in place, into_iter takes ownership of the data 
+        //and moves it, and iter_mut allows you to mutate the data while iterating over it.
+        for (i, support::Extrinsic { caller, call }) in block.extrinsics.into_iter().enumerate() {
+            self.system.increment_nonce(&caller);
+            //dispatch the extrinsic and check if it is valid, if not return an error message with the index of the extrinsic in the block.
+            let _res: Result<(), ()> = self.dispadtch(caller, call).map_err(|e| format!("Error executing extrinsic {i}: {e}"))?;
+        }
+        Ok(())
+    }
     //create an instance of the main runtime by creating new instatnces of the pallets
     fn new()-> Self{
         Self { 
