@@ -1,6 +1,7 @@
 //mod declares that the module exists in the program
-mod balances;
+mod balances;   
 mod system;
+mod support;
 
 //"use" imports the pallets from the balance and system crates so we can use them in our main function.
 use system::Pallet as SystemPallet;
@@ -15,13 +16,15 @@ pub mod types{
     pub type Nonce = u32;
     pub type BlockNumber = u32;
     //all envocable functions in the runtime need to be defined in one place. 
-    pub type Extrinsic = super::support::Extrinsic<Account, super::RuntimeCall>;
-    pub type Header = super::support::Header<BlockNumber>;
-    pub type Block = super::support::Block<Header, Extrinsic>;
+    pub type Extrinsic = crate::support::Extrinsic<Account, crate::RuntimeCall>;
+    pub type Header = crate::support::Header<BlockNumber>;
+    pub type Block = crate::support::Block<Header, Extrinsic>;
 }
 //asks rust to allow you to print the type  in human readible text for debugging; all of the pallets associated need the derive(debug) statement
 #[derive(Debug)]
-
+pub enum RuntimeCall {
+    
+}
 //this is the main runtime, it accumulates all the different pallets in one
 //struct is the definition of the data
 pub struct Runtime {
