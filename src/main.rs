@@ -14,6 +14,10 @@ pub mod types{
     pub type Balance = u128;
     pub type Nonce = u32;
     pub type BlockNumber = u32;
+    //all envocable functions in the runtime need to be defined in one place. 
+    pub type Extrinsic = super::support::Extrinsic<Account, super::RuntimeCall>;
+    pub type Header = super::support::Header<BlockNumber>;
+    pub type Block = super::support::Block<Header, Extrinsic>;
 }
 //asks rust to allow you to print the type  in human readible text for debugging; all of the pallets associated need the derive(debug) statement
 #[derive(Debug)]
