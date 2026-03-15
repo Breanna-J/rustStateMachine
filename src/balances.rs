@@ -74,6 +74,10 @@ where
             Ok(())
         }
     }   
+
+    pub enum Call<T: Config> {
+        Transfer { to: T::Account, amount: T::Balance },
+    }
  
 //this is a conditional compilation attribute that tells the compiler to only compile when running tests. This is useful for keeping test code separate from production code.
 #[cfg(test)]
@@ -89,7 +93,7 @@ mod tests {
     impl super::Config for TestConfig {
         type Balance = u128;
     }
-    
+
     //singular test
     #[test]
     //CREATE A NEW PALLET then set it balance for Alice to 0 and then get the balance for Alice and assert that it is 0.   

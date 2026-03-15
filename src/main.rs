@@ -127,18 +127,5 @@ fn main() {
 
     //execute the extrinsics that make up the block and check if the block is valid, if not print the error message.
     runtime.execute_block(block_1).unwrap_or_else(|e| eprintln!("{e}"));
-    
-    //start emulating the block
-    runtime.system.increment_block();
-    assert_eq!(runtime.system.block_number(), 1);
-
-    //first transaction
-    runtime.system.increment_nonce(&alice);
-    let _res: Result<(), ()> = runtime.balances.transfer(alice.clone(), bob,30).map_err( |e| eprintln!("{e}"));
-
-    //second transaction
-    runtime.system.increment_nonce(&alice);
-    let _res: Result<(), ()> = runtime.balances.transfer(alice.clone(), charlie,15).map_err( |e| eprintln!("{e}"));
-
 }
  
