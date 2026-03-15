@@ -62,7 +62,7 @@ impl Runtime {
         for (i, support::Extrinsic { caller, call }) in block.extrinsics.into_iter().enumerate() {
             self.system.increment_nonce(&caller);
             //dispatch the extrinsic and check if it is valid, if not return an error message with the index of the extrinsic in the block.
-            let _res: Result<(), ()> = self.dispadtch(caller, call).map_err(|e| format!("Error executing extrinsic {i}: {e}"))?;
+            let _res: Result<(), ()> = self.dispatch(caller, call).map_err(|e| format!("Error executing extrinsic {i}: {e}"))?;
         }
         Ok(())
     }
