@@ -75,9 +75,29 @@ where
         }
     }   
 
-    pub enum Call<T: Config> {
-        Transfer { to: T::Account, amount: T::Balance },
+pub enum Call<T: Config> {
+    Transfer { to: T::Account, amount: T::Balance },
+}
+
+
+impl <T: Config> crate::support::Dispatch for Pallet<T> {
+    type Caller = T::Account;
+    type Call = Call<T>;
+    
+    fn dispatch(
+        //TODO: figure out why self works here but must be capitalized for caller and call
+        &mut self,
+        caller:  Self::Caller,
+        call: Self::Call,
+    )-> crate::support::DispatchResult {
+        match call {
+            Call::Transfer { to, amount } => {
+                self.transfer(caller, to, amount)?;
+        },
     }
+    Ok(())
+    }
+}
  
 //this is a conditional compilation attribute that tells the compiler to only compile when running tests. This is useful for keeping test code separate from production code.
 #[cfg(test)]
