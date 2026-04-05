@@ -22,11 +22,17 @@ pub mod types{
     pub type Header = crate::support::Header<BlockNumber>;
     pub type Block = crate::support::Block<Header, Extrinsic>;
 }
+
+//these are the calls that are exposed to the outside world, they are the functions that can be called by the extrinsics.
 //asks rust to allow you to print the type  in human readible text for debugging; all of the pallets associated need the derive(debug) statement
 #[derive(Debug)]
 pub enum RuntimeCall {
+    Balances(BalancesCall),
+    System(SystemCall),
+    NPos(NposCall),
     //the transfer call takes in a destination account and an amount to transfer.
-    Transfer { to: types::Account, amount: types::Balance },
+    BalanceTransfer { to: types::Account, amount: types::Balance },
+
 
 }
 //this is the main runtime, it accumulates all the different pallets in one
@@ -82,15 +88,15 @@ impl crate::support::Dispatch for Runtime  {
     type Caller = <Runtime as system::Config>::Account;
     type Call = RuntimeCall;
     //
-    fn dispatch(&mut self, caller: Self::Caller, call: Self::Call) -> support::DispatchResult {
-        match call {
-            RuntimeCall::Transfer { to, amount } => {
+    fn dispatch(&mut self, caller: Self::Caller, runtime_call: Self::Call) -> support::DispatchResult {
+        match runtime_call {
+            RuntimeCall::BalanceTransfer { to, amount } => {
                 //the ? tells the program that this could be an error, and if it is an error, 
                 //return the error immediately, otherwise continue with the value.  
                 self.balances.transfer(caller, to, amount)?;
-                Ok(())
-            }
+            },
         }
+        Ok(())
     }
     
 }
@@ -116,11 +122,11 @@ fn main() {
         extrinsics: vec![
             Extrinsic {
                 caller: alice.clone(),
-                call: RuntimeCall::Transfer { to: bob.clone(), amount: 30 },
+                call: RuntimeCall::BalanceTransfer { to: bob.clone(), amount: 30 },
             },
             Extrinsic {
                 caller: alice.clone(),
-                call: RuntimeCall::Transfer { to: charlie.clone(), amount: 15 },
+                call: RuntimeCall::BalanceTransfer { to: charlie.clone(), amount: 15 },
             },
         ],
     };
